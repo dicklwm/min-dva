@@ -1,7 +1,6 @@
 import React from 'react';
 import { Form, Button, Row, Col } from 'antd';
 import Utils from '../../utils';
-import styles from './index.less';
 
 const FormUtil = Utils.Form;
 const FormItem = Form.Item;
@@ -58,7 +57,6 @@ const MSearchForm = ({ fields, search = {}, form, showLabel, showReset,
         {fields.map((field, index) =>
           <Col {...formItemLayout.itemCol} key={`itemKey${index}`}>
             <FormItem
-              className={styles.formItem}
               label={getLabelName(field)}
               help={field.help}
               key={field.key}
