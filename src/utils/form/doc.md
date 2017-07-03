@@ -41,7 +41,7 @@ form工具类主要提供以下接口:
 - createFieldDecorator 创建新的fieldDecorator
 
 ##### getFields
-核心方法，转换通用字段类型为表单field格式, getFields返回的数据需要配合[FormGen](#/components/FormGen)组件使用.
+核心方法，转换通用字段类型为表单field格式, getFields返回的数据需要配合[MForm](#/components/MForm)组件使用.
 
 参数：
 
@@ -159,7 +159,7 @@ getDateValue(item.updateTime);
 
 ##### createFieldDecorator
 
-创建antd的fieldDecorator对象,目前此函数主要是提供给`FormGen`组件使用
+创建antd的fieldDecorator对象,目前此函数主要是提供给`MForm`组件使用
 
 参数如下:
 

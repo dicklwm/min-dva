@@ -1,12 +1,16 @@
-import { default as fieldTypes, combineTypes } from './fieldTypes';
+import { default as fieldTypes, combineTypes, editFieldTypes } from './fieldTypes';
 
 /*
  * 获取column中显示的filedValue
  */
-function getFieldValue(value, field = {}) {
+function getFieldValue (value, record, field = {}) {
   let type = field.type || (field.enums && 'enum');
-  type = fieldTypes.hasOwnProperty(type) ? type : 'normal';
-  return fieldTypes[type](value, field);
+  type = fieldTypes.hasOwnProperty(type) ? type : 'text';
+  if (field.hasOwnProperty('editable')) {
+    return editFieldTypes[type]({ value, record, field });
+  } else {
+    return fieldTypes[type]({ value, record, field });
+  }
 }
 
 /**
@@ -20,7 +24,7 @@ function getFieldValue(value, field = {}) {
  * @param extraFields 扩展的fields
  * @result 链式写法，返回链式对象(包含pick,excludes,enhance,values方法), 需要调用values返回最终的数据
  */
-function getColumns(fields, fieldKeys, extraFields) {
+function getColumns (fields, fieldKeys, extraFields) {
   const chain = {};
   let columns = [];
 
@@ -30,8 +34,8 @@ function getColumns(fields, fieldKeys, extraFields) {
       let { render } = field;
 
       if (!render) {
-        render = (value) => {
-          return getFieldValue(value, field);
+        render = (value, record) => {
+          return getFieldValue(value, record, field);
         };
       }
 
@@ -47,7 +51,7 @@ function getColumns(fields, fieldKeys, extraFields) {
   const pick = (_fieldKeys) => {
     _fieldKeys = [].concat(_fieldKeys);
     columns = _fieldKeys.map((fieldKey) => {
-      let column = columns.find(item => fieldKey === (item.key || item.dataIndex));
+      let column = columns.find(item => fieldKey===(item.key || item.dataIndex));
       if (!column) {
         // 如果fieldKey不存在，则创建text类型的column
         column = {
@@ -85,7 +89,7 @@ function getColumns(fields, fieldKeys, extraFields) {
         ...others,
       };
 
-      const column = columns.find(item => item.dataIndex === extraColumn.dataIndex);
+      const column = columns.find(item => item.dataIndex===extraColumn.dataIndex);
       if (column) {
         Object.assign(column, extraColumn);
       } else {
