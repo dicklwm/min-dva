@@ -1,17 +1,17 @@
 {
   "name": "min-dva",
-  "version": "1.0.8",
-  "description": "",
+  "version": "1.1.11",
+  "author": "Min",
+  "license": "ISC",
+  "description": "基于Dva、React、Antd的便捷式框架",
+  "repository": {
+    "type": "github",
+    "url": "https://github.com/dicklwm/min-dva.git"
+  },
   "main": "lib/index.js",
   "scripts": {
     "build": "babel src --out-dir lib"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/dicklwm/min-dva"
-  },
-  "author": "Min",
-  "license": "ISC",
   "dependencies": {
     "antd": "^2.11.2",
     "moment": "^2.18.1",
@@ -20,6 +20,7 @@
     "react-dom": "^15.6.1"
   },
   "devDependencies": {
+    "babel-cli": "^6.24.1",
     "babel-plugin-transform-async-to-generator": "^6.24.1",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-es2015": "^6.24.1",

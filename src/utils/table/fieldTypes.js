@@ -30,11 +30,15 @@ const fieldTypes = {
 export const editFieldTypes = {
   // field 一定要有onSave方法
   // editable编辑状态，status保存状态，onCheck保存到redux方法
-  text: ({ value, field }) => {
+  text: ({ value, record, field }) => {
     return (
       <EditableCell
+        record={record}
         value={value}
+        dataIndex={field.key}
         {...field}
+        editable={record.id===field.editable}
+        status={record.id===field.editable ? field.status : undefined}
       >
         <Input
           placeholder={field.placeholder || `请输入${field.title}`}
@@ -44,55 +48,75 @@ export const editFieldTypes = {
       </EditableCell>
     )
   },
-  number: ({ value, field }) => {
+  number: ({ value, record, field }) => {
     return (
       <EditableCell
+        record={record}
         value={value}
+        dataIndex={field.key}
         {...field}
+        editable={record.id===field.editable}
+        status={record.id===field.editable ? field.status : undefined}
       >
         <InputNumber
           placeholder={field.placeholder || `请输入${field.title}`}
-          style={field.style}
+          style={{ width: field.width, ...field.style }}
           {...field.meta}
         />
       </EditableCell>
     )
   },
-  textarea: ({ value, field }) => {
+  textarea: ({ value, record, field }) => {
     return (
       <EditableCell
+        record={record}
         value={value}
+        dataIndex={field.key}
         {...field}
+        editable={record.id===field.editable}
+        status={record.id===field.editable ? field.status : undefined}
       >
         <Input
           type="textarea"
           placeholder={field.placeholder || `请输入${field.title}`}
-          style={field.style}
+          style={{ width: field.width, ...field.style }}
           {...field.meta}
         />
       </EditableCell>
     )
   },
-  datetime: ({ value, field }) => {
-    <EditableCell
-      value={value}
-      {...field}
-    >
-      <DatePicker
-        showTime
-        placeholder={field.placeholder || `请选择${field.title}`}
-        format="YYYY-MM-DD HH:mm:ss"
-        {...field.meta}
-      />
-    </EditableCell>
-  },
-  date: ({ value, field }) => {
+  datetime: ({ value, record, field }) => {
     return (
       <EditableCell
+        record={record}
         value={value}
+        dataIndex={field.key}
         {...field}
+        editable={record.id===field.editable}
+        status={record.id===field.editable ? field.status : undefined}
       >
         <DatePicker
+          showTime
+          style={{ width: field.width, ...field.style }}
+          placeholder={field.placeholder || `请选择${field.title}`}
+          format="YYYY-MM-DD HH:mm:ss"
+          {...field.meta}
+        />
+      </EditableCell>
+    )
+  },
+  date: ({ value, record, field }) => {
+    return (
+      <EditableCell
+        record={record}
+        value={value}
+        dataIndex={field.key}
+        {...field}
+        editable={record.id===field.editable}
+        status={record.id===field.editable ? field.status : undefined}
+      >
+        <DatePicker
+          style={{ width: field.width, ...field.style }}
           placeholder={field.placeholder || `请选择${field.title}`}
           format="YYYY-MM-DD"
           {...field.meta}
@@ -100,17 +124,22 @@ export const editFieldTypes = {
       </EditableCell>
     )
   },
-  enum: ({ value, field }) => {
+  enum: ({ value, record, field }) => {
     const enumsArray = Object.keys(field.enums).reduce((occ, key) => {
-      occ.push(<Option key={key} value={key}>{field.enums[key]}</Option>);
+      occ.push(<Option key={key}>{field.enums[key]}</Option>);
       return occ;
     }, []);
     return (
       <EditableCell
+        record={record}
         value={value}
+        dataIndex={field.key}
         {...field}
+        editable={record.id===field.editable}
+        status={record.id===field.editable ? field.status : undefined}
       >
         <Select
+          style={{ width: field.width, ...field.style }}
           placeholder={field.placeholder || `请选择${field.name}`}
           {...field.meta}
         >
@@ -119,22 +148,32 @@ export const editFieldTypes = {
       </EditableCell>
     )
   },
-  boolean: ({ value, field }) => {
+  boolean: ({ value, record, field }) => {
     return (
       <EditableCell
+        record={record}
         value={value}
+        dataIndex={field.key}
         {...field}
+        editable={record.id===field.editable}
+        status={record.id===field.editable ? field.status : undefined}
       >
         <Checkbox {...field.meta}/>
       </EditableCell>
     )
   },
-  upload: ({ value, field }) => {
-    // value是文件名
-    <EditableUpload
-      value={value}
-      {...field}
-    />
+  upload: ({ value, record, field }) => {
+    return (
+      // value是文件名
+      <EditableUpload
+        record={record}
+        value={value}
+        dataIndex={field.key}
+        {...field}
+        editable={record.id===field.editable}
+        status={record.id===field.editable ? field.status : undefined}
+      />
+    )
   }
 
 }

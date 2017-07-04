@@ -4,11 +4,14 @@ import { Input, Upload, Icon } from 'antd';
 
 export default class EditableUpload extends React.Component {
 
-  state = {
-    value: this.props.value, // 文件名
-    editable: this.props.editable || false,
-    file: undefined, // 文件源对象
-    fileList: [], // 文件队列
+  constructor (props) {
+    super(props);
+    this.state = {
+      value: this.props.value, // 文件名
+      editable: this.props.editable || false,
+      file: undefined, // 文件源对象
+      fileList: [], // 文件队列
+    }
   }
 
   componentWillReceiveProps (nextProps) {
@@ -23,10 +26,18 @@ export default class EditableUpload extends React.Component {
     }
     if (nextProps.status && nextProps.status!==this.props.status) {
       if (nextProps.status==='save') {
-        this.props.onSave(this.state.value, this.state.file);
+        if (nextProps.onSave) {
+          nextProps.onSave(nextProps.dataIndex, this.state.value, nextProps.record);
+        } else {
+          console.warn('field中没有定义onSave方法，请检查，如果继承了MEditTable则直接可以使用this.handleEditChange，也可以不用handleEditChange，自定义(key,value,record)=>{}');
+        }
       } else if (nextProps.status==='cancel') {
         this.setState({ value: this.cacheValue });
-        this.props.onSave(this.cacheValue);
+        if (nextProps.onSave) {
+          nextProps.onSave(nextProps.dataIndex, this.cacheValue, nextProps.record);
+        } else {
+          console.warn('field中没有定义onSave方法，请检查，如果继承了MEditTable则直接可以使用this.handleEditChange，也可以不用handleEditChange，自定义(key,value,record)=>{}');
+        }
       }
     }
   }
@@ -46,39 +57,35 @@ export default class EditableUpload extends React.Component {
       <div>
         {
           editable ?
-            <div>
-              <Upload
-                name={name}
-                action={action}
-                data={data}
-                beforeUpload={(curFile, curFileList) => {
-                  // 将上传的东西存到state里，返回false阻止上传
-                  this.setState({
-                    value: curFile.name,
-                    file: curFile,
-                    fileList: curFileList,
-                  });
-                  return false;
-                }}
-              >
-                <Input
-                  style={style}
-                  className="large-check-input"
-                  value={value}
-                  readOnly
-                  suffix={
-                    <span>
+            <Upload
+              name={name}
+              action={action}
+              data={data}
+              beforeUpload={(curFile, curFileList) => {
+                // 将上传的东西存到state里，返回false阻止上传
+                this.setState({
+                  value: curFile.name,
+                  file: curFile,
+                  fileList: curFileList,
+                });
+                return false;
+              }}
+            >
+              <Input
+                style={style}
+                className="large-check-input"
+                value={value}
+                readOnly
+                suffix={
+                  <span>
                       <Icon type="upload"/>
                       上传文件
                     </span>
-                  }
-                />
-              </Upload>
-            </div>
+                }
+              />
+            </Upload>
             :
-            <div className="editable-row-text">
-              {value || ' '}
-            </div>
+            value || ' '
         }
       </div>
     );

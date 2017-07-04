@@ -2,6 +2,7 @@ import { default as fieldTypes, combineTypes, editFieldTypes } from './fieldType
 
 /*
  * 获取column中显示的filedValue
+ * 如果传入editable的field识别为可编辑
  */
 function getFieldValue (value, record, field = {}) {
   let type = field.type || (field.enums && 'enum');
@@ -9,7 +10,7 @@ function getFieldValue (value, record, field = {}) {
   if (field.hasOwnProperty('editable')) {
     return editFieldTypes[type]({ value, record, field });
   } else {
-    return fieldTypes[type]({ value, record, field });
+    return fieldTypes[type](value, field);
   }
 }
 
@@ -30,19 +31,25 @@ function getColumns (fields, fieldKeys, extraFields) {
 
   const transform = (_fields) => {
     return _fields.map((field) => {
-      const { dataIndex, title, key, name, ...others } = field;
-      let { render } = field;
+      const { dataIndex, title, key, name, editable, render, ...others } = field;
+      let newRender = (value, record) => getFieldValue(value, record, field);
 
-      if (!render) {
-        render = (value, record) => {
-          return getFieldValue(value, record, field);
-        };
+      if (render && editable) {
+        newRender = (value, record) => {
+          if (record.id!==editable) {
+            return render(value, record);
+          } else {
+            return getFieldValue(value, record, field);
+          }
+        }
+      } else if (render && !editable) {
+        newRender = render;
       }
 
       return {
         dataIndex: key || dataIndex,
         title: name || title,
-        render,
+        render: newRender,
         ...others,
       };
     });
@@ -57,8 +64,8 @@ function getColumns (fields, fieldKeys, extraFields) {
         column = {
           dataIndex: fieldKey,
           title: fieldKey,
-          render: (value) => {
-            return getFieldValue(value);
+          render: (value, record) => {
+            return getFieldValue(value, record, field);
           },
         };
       }
@@ -82,10 +89,31 @@ function getColumns (fields, fieldKeys, extraFields) {
       });
     }
     _extraColumns.forEach((extraColumn) => {
-      const { dataIndex, title, key, name, ...others } = extraColumn;
+      const { dataIndex, title, key, name, render, editable, ...others } = extraColumn;
+      let newRender = (value, record) => getFieldValue(value, record, field);
+
+      if (!render) {
+        newRender = (value, record) => {
+          return getFieldValue(value, record, extraColumn);
+        };
+      }
+
+      if (render && editable) {
+        newRender = (value, record) => {
+          if (record.id!==editable) {
+            return render(value, record);
+          } else {
+            return getFieldValue(value, record, field);
+          }
+        }
+      } else if (render && !editable) {
+        newRender = render;
+      }
+
       extraColumn = {
         dataIndex: key || dataIndex,
         title: name || title,
+        render: newRender,
         ...others,
       };
 
@@ -104,8 +132,6 @@ function getColumns (fields, fieldKeys, extraFields) {
     return columns;
   };
 
-  columns = transform(fields);
-
   if (fieldKeys) {
     pick(fieldKeys);
   }
@@ -113,6 +139,8 @@ function getColumns (fields, fieldKeys, extraFields) {
   if (extraFields) {
     enhance(extraFields);
   }
+
+  columns = transform(fields);
 
   return Object.assign(chain, {
     pick,

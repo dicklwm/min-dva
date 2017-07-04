@@ -4,9 +4,14 @@ import moment from 'moment';
 
 export default class EditableCell extends React.Component {
 
-  state = {
-    value: this.props.value,
-    editable: this.props.editable || false,
+  constructor (props) {
+    super(props);
+    this.state = {
+      value: this.props.value,
+      editable: this.props.editable || false,
+    }
+    this.handleChange = this.handleChange.bind(this);
+    this.handleDateChange = this.handleDateChange.bind(this);
   }
 
   componentWillReceiveProps (nextProps) {
@@ -21,10 +26,18 @@ export default class EditableCell extends React.Component {
     }
     if (nextProps.status && nextProps.status!==this.props.status) {
       if (nextProps.status==='save') {
-        nextProps.onSave(this.state.value);
+        if (nextProps.onSave) {
+          nextProps.onSave(nextProps.dataIndex, this.state.value, nextProps.record);
+        } else {
+          console.warn('field中没有定义onSave方法，请检查，如果继承了MEditTable则直接可以使用this.handleEditChange，也可以不用handleEditChange，自定义(key,value,record)=>{}');
+        }
       } else if (nextProps.status==='cancel') {
         this.setState({ value: this.cacheValue });
-        nextProps.onSave(this.cacheValue);
+        if (nextProps.onSave) {
+          nextProps.onSave(nextProps.dataIndex, this.cacheValue, nextProps.record);
+        } else {
+          console.warn('field中没有定义onSave方法，请检查，如果继承了MEditTable则直接可以使用this.handleEditChange，也可以不用handleEditChange，自定义(key,value,record)=>{}');
+        }
       }
     }
   }
@@ -36,8 +49,8 @@ export default class EditableCell extends React.Component {
       nextProps.status!==this.props.status;
   }
 
-  handleChange = (e) => {
-    const { maxLength } = this.props.meta;
+  handleChange (e) {
+    const { maxLength } = this.props.meta || {};
     const value = typeof e==='object' ? e.target.value : e;
     if (maxLength) {
       if (value.length < maxLength) {
@@ -48,14 +61,13 @@ export default class EditableCell extends React.Component {
     }
   }
 
-  handleDateChange = (date, dateString) => {
+  handleDateChange (date, dateString) {
     this.setState({ value: dateString });
   }
 
   makeInput () {
     const { value } = this.state;
-    const { children, field } = this.props;
-    const { type, onCheck } = field;
+    const { children, type, onCheck } = this.props;
     let trueValue, onChange, onPressEnter;
     switch (type) {
       case 'date':
@@ -72,11 +84,12 @@ export default class EditableCell extends React.Component {
         onPressEnter = onCheck;
         break;
     }
+
     return React.cloneElement(children, {
       value: trueValue,
       onChange,
       onPressEnter,
-    })
+    });
   }
 
   render () {
@@ -85,7 +98,7 @@ export default class EditableCell extends React.Component {
       <div>
         {
           <div>
-            {editable ? this.makeInput : value || ' '}
+            {editable ? this.makeInput() : value || ' '}
           </div>
         }
       </div>
