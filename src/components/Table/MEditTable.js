@@ -4,7 +4,7 @@ import { Button, Popconfirm } from 'antd';
 
 export default class MEditTable extends React.PureComponent {
 
-  constructor(props) {
+  constructor (props) {
     super(props);
     this.state = {
       // 主键索引
@@ -17,9 +17,9 @@ export default class MEditTable extends React.PureComponent {
     this.editButton = (text, record, index) =>
       <span className="table-tool">
         {
-            this.state.editable === record.id ?
-              // 保存、取消按钮组
-              <span>
+          this.state.editable===record.id ?
+            // 保存、取消按钮组
+            <span>
                 <label htmlFor="save">
                   <Button
                     key={index}
@@ -69,9 +69,9 @@ export default class MEditTable extends React.PureComponent {
                   </Popconfirm>
                 </label>
               </span>
-              :
-              // 编辑、删除按钮组
-              <span>
+            :
+            // 编辑、删除按钮组
+            <span>
                 <label htmlFor="edit">
                   <Button
                     key={index}
@@ -114,18 +114,24 @@ export default class MEditTable extends React.PureComponent {
                   </Popconfirm>
                 </label>
               </span>
-          }
+        }
       </span>;
+
+    this.statusChange = this.statusChange.bind(this);
+    this.handlePageChange = this.handlePageChange.bind(this);
+    this.handleQueryChange = this.handleQueryChange.bind(this);
+    this.handleRefresh = this.handleRefresh.bind(this);
+    this.handleEditChange = this.handleEditChange.bind(this);
   }
 
-  statusChange = (editable = -1, status) => {
+  statusChange (editable = -1, status) {
     this.setState({
       editable,
       status,
     });
   }
 
-  handlePageChange = (page, page_size) => {
+  handlePageChange (page, page_size) {
     const { dispatch } = this.props;
     dispatch({
       type: `${this.namespace}/queryDataChange`,
@@ -138,7 +144,7 @@ export default class MEditTable extends React.PureComponent {
     });
   }
 
-  handleQueryChange = (key, value) => {
+  handleQueryChange (key, value) {
     const { dispatch } = this.props;
     dispatch({
       type: `${this.namespace}/queryDataChange`,
@@ -148,21 +154,21 @@ export default class MEditTable extends React.PureComponent {
     });
   }
 
-  handleRefresh= () => {
+  handleRefresh () {
     const { dispatch } = this.props;
     dispatch({
       type: `${this.namespace}/fetch`,
     });
   }
 
-  handleEditChange=(key, value, record) => {
-    if (typeof key === 'string') {
+  handleEditChange (key, value, record) {
+    if (typeof key==='string') {
       this.changeData = {
         ...this.changeData,
         [key]: value,
         id: record.id,
       };
-    } else if (typeof key === 'object') {
+    } else if (typeof key==='object') {
       key.forEach((item, index) => {
         if (value[index]) {
           this.changeData = {
