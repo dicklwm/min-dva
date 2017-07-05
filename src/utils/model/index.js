@@ -7,7 +7,7 @@ const createNestedValueRecuder = (parentKey, value) => (state, { payload: { key 
   let parentState = state[parentKey];
 
   if (key) {
-    parentState = typeof parentState === 'boolean' ? {} : parentState;
+    parentState = typeof parentState==='boolean' ? {} : parentState;
     parentState = { ...parentState, [key]: value };
   } else {
     // 兼容旧版本，如果type不存在，则直接对parent赋值
@@ -22,7 +22,7 @@ const createNestedValueRecuder = (parentKey, value) => (state, { payload: { key 
 
 const createNestedRecuder = parentKey => (state, { payload }) => {
   let parentState = state[parentKey];
-  parentState = typeof parentState === 'boolean' ? {} : parentState;
+  parentState = typeof parentState==='boolean' ? {} : parentState;
 
   return {
     ...state,
@@ -64,6 +64,59 @@ const getDefaultModel = () => {
   };
 };
 
+const getServerDefaultModel = (namespace, service) => {
+  return {
+    state: {
+      visible: false,
+      spinning: false,
+      loading: false,
+      confirmLoading: false,
+    },
+    subscriptions: {
+      setup({ listen }) {
+        listen(`/${namespace}`, { type: 'fetch' });
+      },
+    },
+    effects: {
+      *fetch(action, { callWithLoading, put, select }){
+        const query = { ...yield select(state => state[namespace].query) };
+        query.start_date = query.dates[0] ? query.dates[0].format('YYYY-MM-DD') : '';
+        query.end_date = query.dates[1] ? query.dates[1].format('YYYY-MM-DD') : '';
+        const res = yield callWithLoading(service.fetch, query);
+        if (res.errorCode===0) {
+          yield put({
+            type: 'fetchSuccess',
+            payload: res.data,
+          });
+        }
+      }
+    },
+    reducers: {
+      fetchSuccess(state, { payload }){
+        return {
+          ...state,
+          data: payload,
+        }
+      },
+      showLoading: createNestedValueRecuder('loading', true),
+      hideLoading: createNestedValueRecuder('loading', false),
+      showConfirmLoading: createNestedValueRecuder('confirmLoading', true),
+      hideConfirmLoading: createNestedValueRecuder('confirmLoading', false),
+      showSpinning: createNestedValueRecuder('spinning', true),
+      hideSpinning: createNestedValueRecuder('spinning', false),
+      updateLoading: createNestedRecuder('loading'),
+      updateSpinner: createNestedRecuder('spinning'),
+      updateConfirmLoading: createNestedRecuder('confirmLoading'),
+      updateState(state, { payload }) {
+        return {
+          ...state,
+          ...payload,
+        };
+      },
+    }
+  }
+}
+
 /**
  * 扩展subscription函数的参数,支持listen方法，方便监听path改变
  *
@@ -95,13 +148,13 @@ const enhanceSubscriptions = (subscriptions = {}) => {
       return wrappedSubscriptions;
     }, {});
 
-  function createWrappedSubscriber(subscriber) {
+  function createWrappedSubscriber (subscriber) {
     return (props) => {
       const { dispatch, history } = props;
 
       const listen = (pathReg, action) => {
         let listeners = {};
-        if (typeof pathReg === 'object') {
+        if (typeof pathReg==='object') {
           listeners = pathReg;
         } else {
           listeners[pathReg] = action;
@@ -115,9 +168,9 @@ const enhanceSubscriptions = (subscriptions = {}) => {
             const match = pathToRegexp(_pathReg).exec(pathname);
 
             if (match) {
-              if (typeof _action === 'object') {
+              if (typeof _action==='object') {
                 dispatch(_action);
-              } else if (typeof _action === 'function') {
+              } else if (typeof _action==='function') {
                 _action({ ...location, params: match.slice(1) });
               }
             }
@@ -156,7 +209,9 @@ const enhanceEffects = (effects = {}) => {
           callWithConfirmLoading: createExtraCall(sagaEffects, { confirmLoading: true }),
           callWithSpinning: createExtraCall(sagaEffects, { spinning: true }),
           callWithMessage: createExtraCall(sagaEffects),
-          callWithExtra: (serviceFn, args, config) => { createExtraCall(sagaEffects, config)(serviceFn, args, config); },
+          callWithExtra: (serviceFn, args, config) => {
+            createExtraCall(sagaEffects, config)(serviceFn, args, config);
+          },
         };
 
         yield effects[key](action, extraSagaEffects);
@@ -165,27 +220,27 @@ const enhanceEffects = (effects = {}) => {
 
   return wrappedEffects;
 
-  function createPutEffect(sagaEffects) {
+  function createPutEffect (sagaEffects) {
     const { put } = sagaEffects;
-    return function* putEffect(type, payload) {
+    return function* putEffect (type, payload) {
       let action = { type, payload };
-      if (arguments.length === 1 && typeof type === 'object') {
+      if (arguments.length===1 && typeof type==='object') {
         action = arguments[0];
       }
       yield put(action);
     };
   }
 
-  function createUpdateEffect(sagaEffects) {
+  function createUpdateEffect (sagaEffects) {
     const { put } = sagaEffects;
-    return function* updateEffect(payload) {
+    return function* updateEffect (payload) {
       yield put({ type: 'updateState', payload });
     };
   }
 
-  function createExtraCall(sagaEffects, config = {}) {
+  function createExtraCall (sagaEffects, config = {}) {
     const { put, call } = sagaEffects;
-    return function* extraCallEffect(serviceFn, args, message = {}) {
+    return function* extraCallEffect (serviceFn, args, message = {}) {
       let result;
       const { loading, confirmLoading, spinning } = config;
       const { successMsg, errorMsg, key } = message;
@@ -230,21 +285,21 @@ const enhanceEffects = (effects = {}) => {
  * @param defaults
  * @param properties
  */
-function extend(defaults, properties) {
+function extend (defaults, properties, service) {
   if (!properties) {
     properties = defaults;
     defaults = null;
   }
 
-  const model = defaults || getDefaultModel();
-  const modelAssignKeys = ['state', 'subscriptions', 'effects', 'reducers'];
   const { namespace } = properties;
+  const model = defaults || service ? getServerDefaultModel(namespace, service) : getDefaultModel();
+  const modelAssignKeys = ['state', 'subscriptions', 'effects', 'reducers'];
 
   modelAssignKeys.forEach((key) => {
-    if (key === 'subscriptions') {
+    if (key==='subscriptions') {
       properties[key] = enhanceSubscriptions(properties[key]);
     }
-    if (key === 'effects') {
+    if (key==='effects') {
       properties[key] = enhanceEffects(properties[key]);
     }
     Object.assign(model[key], properties[key]);

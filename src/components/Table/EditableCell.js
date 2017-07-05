@@ -15,7 +15,7 @@ export default class EditableCell extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.value!==this.state.value) {
+    if (nextProps.value!==this.state.value && !nextProps.status) {
       this.setState({ value: nextProps.value });
     }
     if (nextProps.editable!==this.state.editable) {
@@ -32,12 +32,12 @@ export default class EditableCell extends React.Component {
           console.warn('field中没有定义onSave方法，请检查，如果继承了MEditTable则直接可以使用this.handleEditChange，也可以不用handleEditChange，自定义(key,value,record)=>{}');
         }
       } else if (nextProps.status==='cancel') {
-        this.setState({ value: this.cacheValue });
         if (nextProps.onSave) {
           nextProps.onSave(nextProps.dataIndex, this.cacheValue, nextProps.record);
         } else {
           console.warn('field中没有定义onSave方法，请检查，如果继承了MEditTable则直接可以使用this.handleEditChange，也可以不用handleEditChange，自定义(key,value,record)=>{}');
         }
+        this.setState({ value: this.cacheValue });
       }
     }
   }
