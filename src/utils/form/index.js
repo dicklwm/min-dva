@@ -118,7 +118,7 @@ const getFields = (originFields, fieldKeys, extraFields) => {
  * @returns {*}
  */
 
-const createFieldDecorator = (field, item, getFieldDecorator, placeholder = '', inputProps = {}, decoratorOpts = {}) => {
+const createFieldDecorator = (field, item = {}, getFieldDecorator, placeholder = '', inputProps = {}, decoratorOpts = {}) => {
   // field里面有以下元素
   // type 数据类型，渲染成什么样子，不填则默认为text，不填但有enums属性，则为enum
   // rules 验证规则
