@@ -181,14 +181,14 @@ const validate = (form) => {
   };
 
   return (onSuccess, onError) => {
-    validateFields((errors) => {
+    validateFields((errors, values) => {
       if (errors) {
         if (onError) {
           onError(errors);
         }
       } else {
         const originValues = { ...getFieldsValue() };
-        onSuccess(transformValues(originValues), originValues);
+        onSuccess(values, transformValues(originValues), originValues);
       }
     });
   };

@@ -14,17 +14,17 @@ const FormItem = Form.Item;
  * @param others 传递给antd form的其它属性, 请参考ant.form属性
  * @returns {XML}
  */
-export default ({ fields, item, form, layout = {}, ...others }) => {
+export default ({ fields, item, form, layout = {}, formLayout = 'horizontal', ...others }) => {
   return (
     <Form
-      layout="horizontal"
+      layout={formLayout}
       {...others}
     >
       {fields.map(field =>
         (<FormItem
-          label={`${field.name}:`}
+          label={field.name}
           help={field.help}
-          hasFeedback={field.hasFeedback===false ? field.hasFeedback : true}
+          hasFeedback={field.hasFeedback}
           key={field.key}
           {...layout}
         >
