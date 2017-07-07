@@ -8,7 +8,7 @@ class MTable extends React.PureComponent {
     tools: PropsType.array,
     tableProps: PropsType.object,
     paginationProps: PropsType.object,
-    height: PropsType.oneOf([undefined, 'max', 'min']),
+    height: PropsType.oneOf([undefined, 'max']),
   }
 
   constructor (props) {
@@ -49,14 +49,13 @@ class MTable extends React.PureComponent {
                 {tools}
               </div> : null
           }
-          style={height==='min' ? { minHeight: height } : undefined}
           scroll={height==='max' ? { y: this.state.height } : undefined}
           pagination={
             paginationProps ?
               false :
               // 本地分页
               {
-                className: height==='max' ? 'fixed-pagination' : height==='min' ? 'absolute-pagination' : undefined,
+                className: height==='max' ? 'fixed-pagination' : undefined,
                 showSizeChanger: true,
                 showTotal: totalData => <span>共到 {totalData} 条数据</span>,
               }
@@ -67,7 +66,7 @@ class MTable extends React.PureComponent {
           // 如果不传分页的Props就用本地的分页
           paginationProps ?
             <Pagination
-              className={height==='max' ? 'fixed-pagination' : height==='min' ? 'absolute-pagination' : undefined}
+              className={height==='max' ? 'fixed-pagination' : undefined}
               showSizeChanger
               showTotal={totalData => <span>共到 {totalData} 条数据</span>}
               {...paginationProps}
