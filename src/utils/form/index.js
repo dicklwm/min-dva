@@ -27,7 +27,7 @@ const getFields = (originFields, fieldKeys, extraFields) => {
   const pick = (keys) => {
     keys = [].concat(keys);
     fields = keys.map((key) => {
-      let field = fields.find(item => key === item.key);
+      let field = fields.find(item => key===item.key);
       if (!field) {
         // 如果field不存在，则默认类型的field
         field = {
@@ -55,7 +55,7 @@ const getFields = (originFields, fieldKeys, extraFields) => {
       });
     }
     _extraFields.forEach((extraField) => {
-      const field = fields.find(item => item.key === extraField.key);
+      const field = fields.find(item => item.key===extraField.key);
       if (field) {
         Object.assign(field, extraField);
       } else {
@@ -80,8 +80,8 @@ const getFields = (originFields, fieldKeys, extraFields) => {
     keys = [].concat(keys);
     fields = keys.map((key) => {
       let field;
-      if (typeof key === 'string') {
-        field = fields.find(item => key === item.key) || { key };
+      if (typeof key==='string') {
+        field = fields.find(item => key===item.key) || { key };
       } else {
         field = key;
       }
@@ -151,7 +151,7 @@ const createFieldDecorator = (field, item = {}, getFieldDecorator, placeholder =
   return getFieldDecorator(key, { initialValue, rules, inputProps, ...decoratorOpts })(input);
 };
 
-/*
+/**
  * 包装antd form validateFields
  * 主要用途自动转换date类型数据，validateFields提供的错误处理大部分情况下都用不到，故提供一个包装函数，简化使用
  * 示例:
@@ -161,10 +161,11 @@ const createFieldDecorator = (field, item = {}, getFieldDecorator, placeholder =
  *     });
  *  });
  * @param form, antd form对象
+ * @param fields 需要检查并返回值的fields，不传则检验全部
  * @param 返回result函数，参数为: onSuccess, onError
  */
-const validate = (form) => {
-  const { validateFields, getFieldsValue } = form;
+const validate = (form, fields) => {
+  const { validateFields } = form;
   // 将date类型的数据，转换成Date数据
   const transformValues = (values) => {
     const newValues = {};
@@ -173,7 +174,7 @@ const validate = (form) => {
       const isDateTimeType = value && value instanceof moment;
       const newValue = isDateTimeType ? getDateValue(values[key]) : values[key];
       // 如果value为undefined,则不赋值到values对象上
-      if (newValue !== undefined) {
+      if (newValue!==undefined) {
         newValues[key] = newValue;
       }
     });
@@ -181,14 +182,13 @@ const validate = (form) => {
   };
 
   return (onSuccess, onError) => {
-    validateFields((errors, values) => {
+    validateFields(fields, (errors, values) => {
       if (errors) {
         if (onError) {
           onError(errors);
         }
       } else {
-        const originValues = { ...getFieldsValue() };
-        onSuccess(values, transformValues(originValues), originValues);
+        onSuccess(values, transformValues(values));
       }
     });
   };

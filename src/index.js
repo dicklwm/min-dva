@@ -11,4 +11,4 @@ export { default as Utils } from './utils';
 
 export { default as Model } from './utils/model';
 
-window.minVersion = '1.1.16';
+window.minVersion = '1.1.18';

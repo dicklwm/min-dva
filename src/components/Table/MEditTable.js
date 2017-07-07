@@ -76,16 +76,13 @@ export default class MEditTable extends React.PureComponent {
                   <Button
                     key={index}
                     title="编辑"
-                    loading={this.props.loading}
                     id="edit"
                     icon="edit"
                     onClick={() => {
                       // 修改editable为当前行
                       this.statusChange(record.id);
                     }}
-                  >
-                    {this.props.loading ? ' ' : null}
-                  </Button>
+                  />
                 </label>
 
                 <label htmlFor="delete">
@@ -105,12 +102,9 @@ export default class MEditTable extends React.PureComponent {
                     <Button
                       key={index}
                       title="删除"
-                      loading={this.props.loading}
                       icon="delete"
                       type="danger"
-                    >
-                      {this.props.loading ? ' ' : null}
-                    </Button>
+                    />
                   </Popconfirm>
                 </label>
               </span>

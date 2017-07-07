@@ -1,7 +1,15 @@
 import React from 'react';
+import PropsType from 'prop-types';
 import { Table, Pagination } from 'antd';
 
 class MTable extends React.PureComponent {
+
+  static propsType = {
+    tools: PropsType.array,
+    tableProps: PropsType.object,
+    paginationProps: PropsType.object,
+    height: PropsType.oneOf([undefined, 'max', 'min']),
+  }
 
   constructor (props) {
     super(props);
@@ -11,23 +19,25 @@ class MTable extends React.PureComponent {
   }
 
   componentWillUpdate () {
-    const body = document.body;
-    const header = document.getElementById('header');
-    const bread = document.getElementById('bread');
-    const tableTitle = document.getElementsByClassName('ant-table-title');
-    const thead = document.getElementsByClassName('ant-table-thead');
-    const height = (body ? body.clientHeight : 0) -
-      (bread ? bread.clientHeight + 30 : 10) -
-      (header ? header.clientHeight : 0) -
-      (tableTitle.length ? tableTitle[0].clientHeight : 0) -
-      (thead.length ? thead[0].clientHeight : 0) - 62;
-    if (height!==this.state.height) {
-      this.setState({ height });
+    if (this.props.height) {
+      const body = document.body;
+      const header = document.getElementById('header');
+      const bread = document.getElementById('bread');
+      const tableTitle = document.getElementsByClassName('ant-table-title');
+      const thead = document.getElementsByClassName('ant-table-thead');
+      const height = (body ? body.clientHeight : 0) -
+        (bread ? bread.clientHeight + 30 : 10) -
+        (header ? header.clientHeight : 0) -
+        (tableTitle.length ? tableTitle[0].clientHeight : 0) -
+        (thead.length ? thead[0].clientHeight : 0) - 62;
+      if (height!==this.state.height) {
+        this.setState({ height });
+      }
     }
   }
 
   render () {
-    const { tools, tableProps, paginationProps } = this.props;
+    const { tools, tableProps, paginationProps, height } = this.props;
     return (
       <div>
         <Table
@@ -39,16 +49,14 @@ class MTable extends React.PureComponent {
                 {tools}
               </div> : null
           }
-          scroll={{
-            y: this.state.height,
-          }}
-          // 有面包屑70，没面包屑10,头部48，表头56,页码76，可被覆盖
+          style={height==='min' ? { minHeight: height } : undefined}
+          scroll={height==='max' ? { y: this.state.height } : undefined}
           pagination={
             paginationProps ?
               false :
               // 本地分页
               {
-                className: 'fixed-pagination',
+                className: height==='max' ? 'fixed-pagination' : height==='min' ? 'absolute-pagination' : undefined,
                 showSizeChanger: true,
                 showTotal: totalData => <span>共到 {totalData} 条数据</span>,
               }
@@ -59,7 +67,7 @@ class MTable extends React.PureComponent {
           // 如果不传分页的Props就用本地的分页
           paginationProps ?
             <Pagination
-              className="fixed-pagination"
+              className={height==='max' ? 'fixed-pagination' : height==='min' ? 'absolute-pagination' : undefined}
               showSizeChanger
               showTotal={totalData => <span>共到 {totalData} 条数据</span>}
               {...paginationProps}

@@ -64,59 +64,6 @@ const getDefaultModel = () => {
   };
 };
 
-const getServerDefaultModel = (namespace, service) => {
-  return {
-    state: {
-      visible: false,
-      spinning: false,
-      loading: false,
-      confirmLoading: false,
-    },
-    subscriptions: {
-      setup({ listen }) {
-        listen(`/${namespace}`, { type: 'fetch' });
-      },
-    },
-    effects: {
-      *fetch(action, { callWithLoading, put, select }){
-        const query = { ...yield select(state => state[namespace].query) };
-        query.start_date = query.dates[0] ? query.dates[0].format('YYYY-MM-DD') : '';
-        query.end_date = query.dates[1] ? query.dates[1].format('YYYY-MM-DD') : '';
-        const res = yield callWithLoading(service.fetch, query);
-        if (res.errorCode===0) {
-          yield put({
-            type: 'fetchSuccess',
-            payload: res.data,
-          });
-        }
-      }
-    },
-    reducers: {
-      fetchSuccess(state, { payload }){
-        return {
-          ...state,
-          data: payload,
-        }
-      },
-      showLoading: createNestedValueRecuder('loading', true),
-      hideLoading: createNestedValueRecuder('loading', false),
-      showConfirmLoading: createNestedValueRecuder('confirmLoading', true),
-      hideConfirmLoading: createNestedValueRecuder('confirmLoading', false),
-      showSpinning: createNestedValueRecuder('spinning', true),
-      hideSpinning: createNestedValueRecuder('spinning', false),
-      updateLoading: createNestedRecuder('loading'),
-      updateSpinner: createNestedRecuder('spinning'),
-      updateConfirmLoading: createNestedRecuder('confirmLoading'),
-      updateState(state, { payload }) {
-        return {
-          ...state,
-          ...payload,
-        };
-      },
-    }
-  }
-}
-
 /**
  * 扩展subscription函数的参数,支持listen方法，方便监听path改变
  *
@@ -285,14 +232,14 @@ const enhanceEffects = (effects = {}) => {
  * @param defaults
  * @param properties
  */
-function extend (defaults, properties, service) {
+function extend (defaults, properties) {
   if (!properties) {
     properties = defaults;
     defaults = null;
   }
 
   const { namespace } = properties;
-  const model = defaults || service ? getServerDefaultModel(namespace, service) : getDefaultModel();
+  const model = defaults || getDefaultModel();
   const modelAssignKeys = ['state', 'subscriptions', 'effects', 'reducers'];
 
   modelAssignKeys.forEach((key) => {
