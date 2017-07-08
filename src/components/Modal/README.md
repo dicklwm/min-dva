@@ -1,4 +1,4 @@
-## HModal 模态框组件
+## MModal 模态框组件
 
 对`antd modal`的封装，简化对模态框的状态控制.
 
