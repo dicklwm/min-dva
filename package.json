@@ -1,6 +1,6 @@
 {
   "name": "min-dva",
-  "version": "1.1.19",
+  "version": "1.2.0",
   "author": "Min",
   "license": "ISC",
   "description": "基于Dva、React、Antd的便捷式框架",

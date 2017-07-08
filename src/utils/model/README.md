@@ -53,7 +53,7 @@
 使用示例:
 
 ```
-import { Model } from 'carno';
+import { Model } from 'min-dva';
 
 export default Model.extend({
   namespace: 'user',
@@ -87,7 +87,7 @@ export default Model.extend({
 
 ```javascript
 
-import { Model } from 'carno';
+import { Model } from 'min-dva';
 
 export default Model.extend({
 
@@ -100,7 +100,7 @@ export default Model.extend({
   },
 
   effects: {
-    *fetchUsers({ payload }, { put }) {
+    *fetch({ payload }, { put }) {
       yield put({ type: 'showSpinning', payload: { key: 'users' }});
       yield call(services.getUsers);
       yield put({ type: 'hideSpinning', payload: { key: 'users' }});
@@ -125,7 +125,7 @@ export default Model.extend({
 
 ```javascript
 
-import { Model } from 'carno';
+import { Model } from 'min-dva';
 
 const extend = (properties) => {
   const defaultModel = {
@@ -153,7 +153,7 @@ export extend;
 listen函数也支持同时多多个pathname的监听，传入的参数需要为`{pathReg: action}`健值对的对象.
 
 ```javascript
-import { Model } from 'carno';
+import { Model } from 'min-dva';
 
 export default Model.extend({
 
@@ -203,7 +203,7 @@ export default Model.extend({
 Model.extend({
   state: {},
   effects: {
-    *fetchUsers({payload}, {put,select,call,callWithLoading,callWithConfirmLoading,callWithMessage,callWithExtra}){
+    *fetch({payload}, {put,select,call,callWithLoading,callWithConfirmLoading,callWithMessage,callWithExtra}){
 
       //发送请求前，显示loading状态，完成后结束loading状态.如果请求成功则提示加载用户成功,失败则提示
       const users = yeild callWithLoading(service.user.getList,null,{successMsg:'加载用户成功',errorMsg:'加载用户失败'});

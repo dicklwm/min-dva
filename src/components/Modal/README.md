@@ -4,7 +4,7 @@
 
 首先来看看目前项目中对`antd.modal`的使用方式：
 
-```javascript
+```jsx harmony
 
 export default class Test extend React.component {
   constructor(props){

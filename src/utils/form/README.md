@@ -29,7 +29,8 @@ Form类的主要作用是将以上通用的`field`格式，转换为`createField
 ### 如何使用
 form工具类通过Utils类中引入.
 
-> import { Utils } from 'carno';
+> import { Utils } from 'min-dva';
+
 > const { getFields } = Utils;
 
 form工具类主要提供以下接口:
@@ -60,7 +61,7 @@ getFields返回的是一个链式对象，需要调用`values`方法才能返回
 ```javascript 
 
 import { Form, Button } from 'antd';
-import { Utils, FormGen } from 'carno';
+import { Utils, MForm } from 'min-dva';
 
 const { getFields, validate } = Utils.Form;
 
@@ -73,8 +74,8 @@ const fields = [
     key: 'gender',
     name: '性别',
     enums: {
-      MALE: '男',
-      FAMALE: '女'
+      1: '男',
+      2: '女'
     }
   }, {
     key: 'birthday',
@@ -83,27 +84,30 @@ const fields = [
   }, {
     key: 'desc',
     name: '自我介绍',
-    type: 'textarea'
+    type: 'textarea',
+    meta: {
+      rows:2,
+    }
   }
 ];
 
 let results = {};
 
-function FormGenBase({ form }) {
+function FormDemo({ form }) {
   const formProps = {
     fields: getFields(fields).values(),
-    item: {},
+    item: {}, // 各字段的初始化值
     form
   };
 
   return (
     <div>
-      <FormGen {...formProps} />
+      <MForm {...formProps} />
     </div>
   );
 }
 
-export default Form.create()(FormGenBase);
+export default Form.create()(FormDemo);
 
 ```
 
@@ -130,20 +134,22 @@ combineTypes（{
 
 ##### validate
 
-validate对象是对antd validate方法的包装，主要作用是统一处理form中的datatime类型的数据，将moment数据结构转换为number类型.
+validate对象是对antd validate方法的包装，主要作用是简化使用方式，可以从第二个参数获取到统一处理form中的datatime类型的数据，将moment数据结构转换为number类型
 
 参数：
 
 - form antd表单对象
+- fields 需要检验的字段，为空则检验全部
 
 ```
-const onSuccess = (values) => {
-  // values 中的datatime类型已自动转换为number
+const onSuccess = (values,transformValues) => {
+  // values 原值
+  // transformValues 中的datatime类型已自动转换为number，且不存在undefined的值
 }
 const  onError ＝ () => {
 
 }
-validate(form)(onSuccess, onError)
+validate(form,fields)(onSuccess, onError)
 
 ```
 
@@ -163,21 +169,9 @@ getDateValue(item.updateTime);
 
 参数如下:
 
-- field 字段定义
-- item 初始化数据对象
-- getFieldDecorator antd form对象中的getFieldDecorator
-- showPlaceholder 是否显示Placeholder
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+* field 单个的原始的field
+* item 定义对应key的初始化值
+* getFieldDecorator antd的form.getFieldDecorator方法
+* placeholder
+* inputProps 传给渲染出来的组件的props，如<Input {...inputProps}/> 
+* decoratorOpts getFieldDecorator('id')({...decoratorOpts})
