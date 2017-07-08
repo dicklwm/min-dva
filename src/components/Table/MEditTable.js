@@ -29,7 +29,7 @@ export default class MEditTable extends React.PureComponent {
                     type="primary"
                     onClick={() => {
                       // 保存按钮
-                      this.statusChange(record.id, 'save');
+                      this.editableAndStatusChange(record.id, 'save');
                       // 异步执行dispatch，不然changeData会没有值
                       // 保存完了需要改回status
                       setTimeout(() => {
@@ -40,7 +40,7 @@ export default class MEditTable extends React.PureComponent {
                         }
                         // 用完changeData清空，状态也清空
                         this.changeData = {};
-                        this.statusChange(-1);
+                        this.editableAndStatusChange(-1);
                       }, 0);
                     }}
                   />
@@ -53,11 +53,11 @@ export default class MEditTable extends React.PureComponent {
                     placement="bottomRight"
                     onConfirm={() => {
                       // 修改状态为cancel
-                      this.statusChange(record.id, 'cancel');
+                      this.editableAndStatusChange(record.id, 'cancel');
 
                       // 异步执行dispatch，不然props不进去Cell里面
                       setTimeout(() => {
-                        this.statusChange(-1);
+                        this.editableAndStatusChange(-1);
                       }, 0);
                     }}
                   >
@@ -80,7 +80,7 @@ export default class MEditTable extends React.PureComponent {
                     icon="edit"
                     onClick={() => {
                       // 修改editable为当前行
-                      this.statusChange(record.id);
+                      this.editableAndStatusChange(record.id);
                     }}
                   />
                 </label>
@@ -111,14 +111,14 @@ export default class MEditTable extends React.PureComponent {
         }
       </span>;
 
-    this.statusChange = this.statusChange.bind(this);
+    this.editableAndStatusChange = this.editableAndStatusChange.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
     this.handleQueryChange = this.handleQueryChange.bind(this);
     this.handleRefresh = this.handleRefresh.bind(this);
     this.handleEditChange = this.handleEditChange.bind(this);
   }
 
-  statusChange (editable = -1, status) {
+  editableAndStatusChange (editable = -1, status) {
     this.setState({
       editable,
       status,

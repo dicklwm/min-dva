@@ -1,4 +1,4 @@
-import { default as fieldTypes, combineTypes, editFieldTypes } from './fieldTypes';
+import { default as fieldTypes, combineTypes, editFieldTypes, combineEditType } from './fieldTypes';
 
 /*
  * 获取column中显示的filedValue
@@ -152,6 +152,7 @@ function getColumns (fields, fieldKeys, extraFields) {
 
 export default {
   combineTypes,
+  combineEditType,
   getFieldValue,
   getColumns,
 };

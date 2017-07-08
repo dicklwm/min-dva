@@ -127,13 +127,20 @@ const createFieldDecorator = (field, item = {}, getFieldDecorator, placeholder =
   // meta 额外的数据，如InputNumber的min,max属性，textarea里面的rows等
   // required 是否必填，如果不设置rules则默认在rules上添加必填规则
   // render 自定义渲染规则，如果不想用定义好的类型渲染出来，可以自定义render方法，render属性应该定义为render:({initialValue,...以下参数})=>{...}
-  let { type, rules } = field;
-  const { key, enums, meta, required, render } = field;
+  let { type, rules, meta } = field;
+  const { key, enums, required, render } = field;
+  meta = meta || {};
   // 判断是否存在type属性，如果存在，则判断在fieldTypes里面存不存在，存在就用原有的type，不存在就判断是否存在enums，存在则是enum，都不存在则默认为text
   type = (fieldTypes.hasOwnProperty(type) && type) || (enums && 'enum') || 'text';
   // 如果存在render属性，直接用render来做渲染，render属性应该定义为render:({initialValue,...以下参数})=>{...}
   // 不存在render属性，则使用fieldTypes里面已经定义好的类型进行render
-  const typedItem = (render || fieldTypes[type])({ initialValue: item[key], meta, field, inputProps, placeholder });
+  const typedItem = (render || fieldTypes[type])({
+    initialValue: item[key],
+    meta,
+    field,
+    inputProps,
+    placeholder: placeholder || meta.placeholder
+  });
   let { input, initialValue } = typedItem;
   // 判断是不是一个有效的React元素，用于截取input和初始化值，传给antd的form.getFieldDecorator方法
   if (React.isValidElement(typedItem)) {

@@ -8,18 +8,19 @@ class MTable extends React.PureComponent {
     tools: PropsType.array,
     tableProps: PropsType.object,
     paginationProps: PropsType.object,
-    height: PropsType.oneOf([undefined, 'max']),
+    type: PropsType.oneOf([undefined, 'max']),
+    height: PropsType.number,
   }
 
   constructor (props) {
     super(props);
     this.state = {
-      height: 500,
+      height: this.props.type ? this.props.height : undefined,
     }
   }
 
   componentWillUpdate () {
-    if (this.props.height) {
+    if (this.props.type) {
       const body = document.body;
       const header = document.getElementById('header');
       const bread = document.getElementById('bread');
@@ -37,7 +38,7 @@ class MTable extends React.PureComponent {
   }
 
   render () {
-    const { tools, tableProps, paginationProps, height } = this.props;
+    const { tools, tableProps, paginationProps, type } = this.props;
     return (
       <div>
         <Table
@@ -49,13 +50,13 @@ class MTable extends React.PureComponent {
                 {tools}
               </div> : null
           }
-          scroll={height==='max' ? { y: this.state.height } : undefined}
+          scroll={type ? { y: this.state.height } : undefined}
           pagination={
-            paginationProps ?
+            paginationProps===false ?
               false :
               // 本地分页
               {
-                className: height==='max' ? 'fixed-pagination' : undefined,
+                className: type ? 'fixed-pagination' : undefined,
                 showSizeChanger: true,
                 showTotal: totalData => <span>共到 {totalData} 条数据</span>,
               }
@@ -64,9 +65,9 @@ class MTable extends React.PureComponent {
         />
         {
           // 如果不传分页的Props就用本地的分页
-          paginationProps ?
+          paginationProps!==false ?
             <Pagination
-              className={height==='max' ? 'fixed-pagination' : undefined}
+              className={type ? 'fixed-pagination' : undefined}
               showSizeChanger
               showTotal={totalData => <span>共到 {totalData} 条数据</span>}
               {...paginationProps}

@@ -35,13 +35,13 @@ export const editFieldTypes = {
       <EditableCell
         record={record}
         value={value}
-        dataIndex={field.key}
+        dataIndex={field.dataIndex || field.key}
         {...field}
         editable={record.id===field.editable}
         status={record.id===field.editable ? field.status : undefined}
       >
         <Input
-          placeholder={field.placeholder || `请输入${field.title}`}
+          placeholder={field.placeholder===false ? undefined : field.placeholder || `请输入${field.title}`}
           style={field.style}
           {...field.meta}
         />
@@ -53,13 +53,13 @@ export const editFieldTypes = {
       <EditableCell
         record={record}
         value={value}
-        dataIndex={field.key}
+        dataIndex={field.dataIndex || field.key}
         {...field}
         editable={record.id===field.editable}
         status={record.id===field.editable ? field.status : undefined}
       >
         <InputNumber
-          placeholder={field.placeholder || `请输入${field.title}`}
+          placeholder={field.placeholder===false ? undefined : field.placeholder || `请输入${field.title}`}
           style={{ width: field.width, ...field.style }}
           {...field.meta}
         />
@@ -71,14 +71,14 @@ export const editFieldTypes = {
       <EditableCell
         record={record}
         value={value}
-        dataIndex={field.key}
+        dataIndex={field.dataIndex || field.key}
         {...field}
         editable={record.id===field.editable}
         status={record.id===field.editable ? field.status : undefined}
       >
         <Input
           type="textarea"
-          placeholder={field.placeholder || `请输入${field.title}`}
+          placeholder={field.placeholder===false ? undefined : field.placeholder || `请输入${field.title}`}
           style={{ width: field.width, ...field.style }}
           {...field.meta}
         />
@@ -90,7 +90,7 @@ export const editFieldTypes = {
       <EditableCell
         record={record}
         value={value}
-        dataIndex={field.key}
+        dataIndex={field.dataIndex || field.key}
         {...field}
         editable={record.id===field.editable}
         status={record.id===field.editable ? field.status : undefined}
@@ -98,7 +98,7 @@ export const editFieldTypes = {
         <DatePicker
           showTime
           style={{ width: field.width, ...field.style }}
-          placeholder={field.placeholder || `请选择${field.title}`}
+          placeholder={field.placeholder===false ? undefined : field.placeholder || `请选择${field.title}`}
           format="YYYY-MM-DD HH:mm:ss"
           {...field.meta}
         />
@@ -110,14 +110,14 @@ export const editFieldTypes = {
       <EditableCell
         record={record}
         value={value}
-        dataIndex={field.key}
+        dataIndex={field.dataIndex || field.key}
         {...field}
         editable={record.id===field.editable}
         status={record.id===field.editable ? field.status : undefined}
       >
         <DatePicker
           style={{ width: field.width, ...field.style }}
-          placeholder={field.placeholder || `请选择${field.title}`}
+          placeholder={field.placeholder===false ? undefined : field.placeholder || `请选择${field.title}`}
           format="YYYY-MM-DD"
           {...field.meta}
         />
@@ -133,14 +133,14 @@ export const editFieldTypes = {
       <EditableCell
         record={record}
         value={value}
-        dataIndex={field.key}
+        dataIndex={field.dataIndex || field.key}
         {...field}
         editable={record.id===field.editable}
         status={record.id===field.editable ? field.status : undefined}
       >
         <Select
           style={{ width: field.width, ...field.style }}
-          placeholder={field.placeholder || `请选择${field.name}`}
+          placeholder={field.placeholder===false ? undefined : field.placeholder || `请选择${field.name}`}
           {...field.meta}
         >
           {enumsArray}
@@ -153,7 +153,7 @@ export const editFieldTypes = {
       <EditableCell
         record={record}
         value={value}
-        dataIndex={field.key}
+        dataIndex={field.dataIndex || field.key}
         {...field}
         editable={record.id===field.editable}
         status={record.id===field.editable ? field.status : undefined}
@@ -168,7 +168,7 @@ export const editFieldTypes = {
       <EditableUpload
         record={record}
         value={value}
-        dataIndex={field.key}
+        dataIndex={field.dataIndex || field.key}
         {...field}
         editable={record.id===field.editable}
         status={record.id===field.editable ? field.status : undefined}

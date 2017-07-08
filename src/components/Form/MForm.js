@@ -20,7 +20,7 @@ export default ({ fields, item, form, layout = {}, formLayout = 'horizontal', ..
       layout={formLayout}
       {...others}
     >
-      {fields.map(field =>
+      {fields && fields.map(field =>
         (<FormItem
           label={field.name}
           help={field.help}
