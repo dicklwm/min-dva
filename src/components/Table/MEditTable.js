@@ -116,6 +116,7 @@ export default class MEditTable extends React.PureComponent {
     this.handleQueryChange = this.handleQueryChange.bind(this);
     this.handleRefresh = this.handleRefresh.bind(this);
     this.handleEditChange = this.handleEditChange.bind(this);
+    this.handleClearQuery = this.handleClearQuery.bind(this);
   }
 
   editableAndStatusChange (editable = -1, status) {
@@ -145,6 +146,16 @@ export default class MEditTable extends React.PureComponent {
       payload: {
         [key]: value,
       },
+    });
+  }
+
+  handleClearQuery () {
+    const { dispatch } = this.props;
+    dispatch({
+      type: `${this.namespace}/clearQuery`,
+    });
+	dispatch({
+      type: `${this.namespace}/fetch`,
     });
   }
 

@@ -52,11 +52,11 @@ class MTable extends React.PureComponent {
           }
           scroll={type ? { y: this.state.height } : undefined}
           pagination={
-            paginationProps===false ?
+            paginationProps===false || paginationProps ?
               false :
               // 本地分页
               {
-                className: type ? 'fixed-pagination' : undefined,
+                className: type ? 'fixed-pagination' : 'ant-pagination-right',
                 showSizeChanger: true,
                 showTotal: totalData => <span>共到 {totalData} 条数据</span>,
               }
@@ -65,9 +65,9 @@ class MTable extends React.PureComponent {
         />
         {
           // 如果不传分页的Props就用本地的分页
-          paginationProps!==false ?
+          paginationProps && paginationProps!==false ?
             <Pagination
-              className={type ? 'fixed-pagination' : undefined}
+              className={type ? 'fixed-pagination' : 'ant-pagination-right'}
               showSizeChanger
               showTotal={totalData => <span>共到 {totalData} 条数据</span>}
               {...paginationProps}
